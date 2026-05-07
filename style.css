@@ -20,8 +20,8 @@ input { font: inherit; }
 /* ── Feed ─────────────────────────────────────────── */
 #page-feed { overflow-y: scroll; scroll-snap-type: y mandatory; }
 .video-card { position: relative; width: 100%; height: calc(100vh - 56px); height: calc(100dvh - 56px); scroll-snap-align: start; flex-shrink: 0; background: #000; overflow: hidden; }
-.video-player { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #000; overflow: hidden; }
-.video-player iframe { position: absolute; top: 0; left: 50%; transform: translateX(-50%); height: 100%; width: calc((100vh - 56px) * 0.5625); width: calc((100dvh - 56px) * 0.5625); min-width: 100%; border: none; pointer-events: none; }
+.video-player { position: absolute; inset: 0; overflow: hidden; background: #000; }
+.video-player iframe { position: absolute; top: 0; left: 50%; transform: translateX(-50%); height: 100%; width: calc((100vh - 56px) * 0.5625); min-width: 100%; border: none; pointer-events: none; }
 .video-tap-overlay { position: absolute; inset: 0; z-index: 5; }
 .video-lang-badge { position: absolute; top: 12px; left: 12px; z-index: 10; background: rgba(0,0,0,.55); border-radius: 8px; padding: 3px 8px; font-size: 12px; }
 

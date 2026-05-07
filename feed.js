@@ -122,7 +122,7 @@ const Feed = (() => {
 
       const hasCaptions = video.captions.length > 0;
       card.innerHTML = `
-        <div class="video-player" id="${playerId}"></div>
+        <div class="video-player"><div id="${playerId}"></div></div>
         <div class="video-tap-overlay"></div>
         <div class="video-lang-badge">${langLabel}</div>
         <div class="caption-strip">

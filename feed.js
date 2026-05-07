@@ -69,7 +69,7 @@ const Feed = (() => {
     document.body.appendChild(el);
   }
 
-  // ── 字幕テキストビュー ───────────────────────────────
+  // ── 字幕テキストビュー（歌詞スタイル）────────────────
   function showTextView(captions, language, container) {
     const existing = container.querySelector(".text-view");
     if (existing) { existing.remove(); return; }
@@ -84,7 +84,7 @@ const Feed = (() => {
           ? " "
           : `<span class="tappable-word" data-word="${part.replace(/[^a-zA-Z가-힣]/g, "")}">${part}</span>`
       ).join("");
-      return `<div class="text-line">
+      return `<div class="text-line" data-start="${c.start_sec}" data-end="${c.end_sec}">
         <p class="text-original">${spans}</p>
         ${c.text_ja ? `<p class="text-ja">${c.text_ja}</p>` : ""}
       </div>`;
@@ -92,7 +92,7 @@ const Feed = (() => {
 
     el.innerHTML = `
       <button class="text-view-close">✕</button>
-      <h2 class="text-view-title">字幕テキスト</h2>
+      <h2 class="text-view-title">歌詞・字幕</h2>
       <div class="text-view-body">${lines}</div>`;
 
     el.querySelector(".text-view-close").addEventListener("click", () => el.remove());
@@ -120,17 +120,30 @@ const Feed = (() => {
       const playerId = `yt-${video.youtube_id}`;
       const langLabel = video.language === "en" ? "🇺🇸 English" : "🇰🇷 한국어";
 
+      const hasCaptions = video.captions.length > 0;
       card.innerHTML = `
         <div class="video-player" id="${playerId}"></div>
-        <div class="card-info">
-          <span class="video-lang-badge">${langLabel}</span>
-          <span class="video-swipe-hint">← スワイプで全文</span>
-        </div>
-        <div class="caption-area" id="cap-${video.youtube_id}"></div>`;
+        <div class="video-lang-badge">${langLabel}</div>
+        <div class="caption-strip">
+          <div class="caption-row">
+            <div class="caption-texts" id="cap-${video.youtube_id}">
+              ${!hasCaptions ? '<span class="cap-none">字幕なし</span>' : ''}
+            </div>
+            ${hasCaptions ? '<button class="btn-lyrics">全文 ↑</button>' : ''}
+          </div>
+        </div>`;
 
       page.appendChild(card);
 
       addSwipe(card, () => showTextView(video.captions, video.language, card));
+
+      const lyricsBtn = card.querySelector(".btn-lyrics");
+      if (lyricsBtn) {
+        lyricsBtn.addEventListener("click", e => {
+          e.stopPropagation();
+          showTextView(video.captions, video.language, card);
+        });
+      }
 
       if (ytReady) {
         players[video.youtube_id] = new YT.Player(playerId, {
@@ -168,37 +181,57 @@ const Feed = (() => {
   function startCaptionSync(youtubeId) {
     stopCaptionSync(youtubeId);
     const video = videos.find(v => v.youtube_id === youtubeId);
-    if (!video) return;
+    if (!video || video.captions.length === 0) return;
 
     captionTimers[youtubeId] = setInterval(() => {
       const player = players[youtubeId];
       if (!player || typeof player.getCurrentTime !== "function") return;
       const sec = player.getCurrentTime();
       const cap = currentCaption(video.captions, sec);
+
+      // キャプションストリップ更新
       const el = document.getElementById(`cap-${youtubeId}`);
-      if (!el) return;
-
-      if (cap) {
-        const words = cap.text.split(/(\s+)/);
-        const spans = words.map(part =>
-          /\s+/.test(part)
-            ? " "
-            : `<span class="tappable-word" data-word="${part.replace(/[^a-zA-Z가-힣]/g, "")}">${part}</span>`
-        ).join("");
-        el.innerHTML = `
-          <div class="caption-box">
-            <p class="caption-text">${spans}</p>
-            ${cap.text_ja ? `<p class="caption-ja">${cap.text_ja}</p>` : ""}
-          </div>`;
-
-        el.querySelectorAll(".tappable-word").forEach(span => {
-          span.addEventListener("click", () => {
-            const w = span.dataset.word;
-            if (w.length >= 2) showWordPopup(w, video.language);
+      if (el) {
+        if (cap) {
+          const words = cap.text.split(/(\s+)/);
+          const spans = words.map(part =>
+            /\s+/.test(part)
+              ? " "
+              : `<span class="tappable-word" data-word="${part.replace(/[^a-zA-Z가-힣]/g, "")}">${part}</span>`
+          ).join("");
+          el.innerHTML = `
+            <div class="caption-text-line">${spans}</div>
+            ${cap.text_ja ? `<div class="caption-ja">${cap.text_ja}</div>` : ""}`;
+          el.querySelectorAll(".tappable-word").forEach(span => {
+            span.addEventListener("click", () => {
+              const w = span.dataset.word;
+              if (w.length >= 2) showWordPopup(w, video.language);
+            });
           });
+        } else {
+          el.innerHTML = "";
+        }
+      }
+
+      // テキストビュー（歌詞表示）のハイライト更新
+      const card = document.querySelector(`.video-card[data-id="${youtubeId}"]`);
+      const textView = card?.querySelector(".text-view");
+      if (textView) {
+        let activeEl = null;
+        textView.querySelectorAll(".text-line").forEach(line => {
+          const s = parseFloat(line.dataset.start);
+          const e = parseFloat(line.dataset.end);
+          const active = sec >= s && sec <= e;
+          line.classList.toggle("text-line-active", active);
+          if (active) activeEl = line;
         });
-      } else {
-        el.innerHTML = "";
+        if (activeEl) {
+          const body = textView.querySelector(".text-view-body");
+          if (body) {
+            const offset = activeEl.offsetTop - body.clientHeight / 2 + activeEl.offsetHeight / 2;
+            body.scrollTo({ top: offset, behavior: "smooth" });
+          }
+        }
       }
     }, 250);
   }

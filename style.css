@@ -19,18 +19,18 @@ input { font: inherit; }
 
 /* ── Feed ─────────────────────────────────────────── */
 #page-feed { overflow-y: scroll; scroll-snap-type: y mandatory; }
-.video-card { position: relative; width: 100%; height: calc(100dvh - 56px); scroll-snap-align: start; flex-shrink: 0; background: #111; overflow: hidden; }
-.video-player { position: absolute; inset: 0; overflow: hidden; background: #000; }
-.video-player iframe { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; min-height: 177.78vw; border: none; }
-.video-gradient { position: absolute; bottom: 0; left: 0; right: 0; height: 160px; background: linear-gradient(to top, rgba(0,0,0,.75), transparent); pointer-events: none; }
-.video-lang-badge { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,.5); border-radius: 8px; padding: 3px 8px; font-size: 12px; }
-.video-swipe-hint { position: absolute; top: 12px; right: 12px; font-size: 11px; color: rgba(255,255,255,.4); }
+.video-card { display: flex; flex-direction: column; position: relative; width: 100%; height: calc(100dvh - 56px); scroll-snap-align: start; flex-shrink: 0; background: #111; overflow: hidden; }
+.video-player { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; flex-shrink: 0; overflow: hidden; }
+.video-player iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+.card-info { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; flex-shrink: 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+.video-lang-badge { background: rgba(255,255,255,.1); border-radius: 8px; padding: 3px 8px; font-size: 12px; }
+.video-swipe-hint { font-size: 11px; color: rgba(255,255,255,.4); }
 
-/* Caption overlay */
-.caption-overlay { position: absolute; bottom: 88px; left: 0; right: 0; text-align: center; padding: 0 16px; pointer-events: none; }
-.caption-box { display: inline-block; background: rgba(0,0,0,.55); border-radius: 10px; padding: 8px 12px; max-width: 100%; pointer-events: auto; }
-.caption-text { font-size: 15px; line-height: 1.5; margin-bottom: 4px; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
-.caption-ja { font-size: 11px; color: rgba(255,255,255,.55); }
+/* Caption area */
+.caption-area { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 16px 20px; overflow: hidden; }
+.caption-box { text-align: center; max-width: 100%; }
+.caption-text { font-size: 18px; line-height: 1.7; margin-bottom: 8px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.caption-ja { font-size: 14px; color: rgba(255,255,255,.6); line-height: 1.5; }
 .tappable-word { cursor: pointer; }
 .tappable-word:active { color: #25F4EE; }
 

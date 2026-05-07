@@ -122,10 +122,11 @@ const Feed = (() => {
 
       card.innerHTML = `
         <div class="video-player" id="${playerId}"></div>
-        <div class="video-gradient"></div>
-        <div class="video-lang-badge">${langLabel}</div>
-        <div class="video-swipe-hint">← スワイプで字幕</div>
-        <div class="caption-overlay" id="cap-${video.youtube_id}"></div>`;
+        <div class="card-info">
+          <span class="video-lang-badge">${langLabel}</span>
+          <span class="video-swipe-hint">← スワイプで全文</span>
+        </div>
+        <div class="caption-area" id="cap-${video.youtube_id}"></div>`;
 
       page.appendChild(card);
 

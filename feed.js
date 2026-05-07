@@ -123,6 +123,7 @@ const Feed = (() => {
       const hasCaptions = video.captions.length > 0;
       card.innerHTML = `
         <div class="video-player" id="${playerId}"></div>
+        <div class="video-tap-overlay"></div>
         <div class="video-lang-badge">${langLabel}</div>
         <div class="caption-strip">
           <div class="caption-row">
@@ -136,6 +137,17 @@ const Feed = (() => {
       page.appendChild(card);
 
       addSwipe(card, () => showTextView(video.captions, video.language, card));
+
+      // タップで再生/一時停止
+      card.querySelector(".video-tap-overlay").addEventListener("click", () => {
+        const p = players[video.youtube_id];
+        if (!p) return;
+        if (p.getPlayerState() === YT.PlayerState.PLAYING) {
+          p.pauseVideo();
+        } else {
+          p.playVideo();
+        }
+      });
 
       const lyricsBtn = card.querySelector(".btn-lyrics");
       if (lyricsBtn) {
@@ -152,6 +164,7 @@ const Feed = (() => {
             autoplay: 0, controls: 0, modestbranding: 1,
             rel: 0, playsinline: 1, loop: 1,
             playlist: video.youtube_id,
+            iv_load_policy: 3, fs: 0, disablekb: 1,
           },
           events: {
             onReady: (e) => { if (video.youtube_id === activeId) e.target.playVideo(); },

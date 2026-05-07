@@ -159,6 +159,8 @@ const Feed = (() => {
 
       if (ytReady) {
         players[video.youtube_id] = new YT.Player(playerId, {
+          width: "100%",
+          height: "100%",
           videoId: video.youtube_id,
           playerVars: {
             autoplay: 0, controls: 0, modestbranding: 1,
@@ -167,7 +169,12 @@ const Feed = (() => {
             iv_load_policy: 3, fs: 0, disablekb: 1,
           },
           events: {
-            onReady: (e) => { if (video.youtube_id === activeId) e.target.playVideo(); },
+            onReady: (e) => {
+              const iframe = e.target.getIframe();
+              iframe.style.cssText =
+                "position:absolute;top:0;left:0;width:100%;height:100%;border:none;pointer-events:none;";
+              if (video.youtube_id === activeId) e.target.playVideo();
+            },
           },
         });
       }

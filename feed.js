@@ -220,6 +220,11 @@ const Feed = (() => {
     showLoading();
     try {
       videos = await API.getFeed(STORE.language);
+      if (videos.length === 0) {
+        document.getElementById("page-feed").innerHTML =
+          `<div class="loading">動画を準備中です。30秒後に再読み込みしてください。</div>`;
+        return;
+      }
       if (ytReady) renderCards();
       else pendingInit = true;
     } catch (e) {

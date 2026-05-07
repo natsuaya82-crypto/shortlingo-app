@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#000000" />
+  <title>ShortLingo</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script src="https://www.youtube.com/iframe_api"></script>
+</head>
+<body>
+  <div id="app">
+    <div id="page-feed"   class="page active"></div>
+    <div id="page-search" class="page"></div>
+    <div id="page-study"  class="page"></div>
+    <div id="page-user"   class="page"></div>
+
+    <nav id="tab-bar">
+      <button class="tab active" data-tab="feed">
+        <span class="tab-icon">▶</span>
+        <span class="tab-label">動画</span>
+      </button>
+      <button class="tab" data-tab="search">
+        <span class="tab-icon">🔍</span>
+        <span class="tab-label">検索</span>
+      </button>
+      <button class="tab" data-tab="study">
+        <span class="tab-icon">📚</span>
+        <span class="tab-label">学習</span>
+      </button>
+      <button class="tab" data-tab="user">
+        <span class="tab-icon">👤</span>
+        <span class="tab-label">ユーザー</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="store.js"></script>
+  <script src="api.js"></script>
+  <script src="feed.js"></script>
+  <script src="search.js"></script>
+  <script src="study.js"></script>
+  <script src="user.js"></script>
+  <script>
+    const tabs  = document.querySelectorAll(".tab");
+    const pages = document.querySelectorAll(".page");
+
+    const modules = { feed: Feed, search: Search, study: Study, user: User };
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const target = tab.dataset.tab;
+        tabs.forEach(t  => t.classList.remove("active"));
+        pages.forEach(p => p.classList.remove("active"));
+        tab.classList.add("active");
+        document.getElementById(`page-${target}`).classList.add("active");
+        modules[target]?.init();
+      });
+    });
+
+    Feed.init();
+  </script>
+</body>
+</html>
